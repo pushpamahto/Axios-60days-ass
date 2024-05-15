@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advance task manager</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://www.unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://www.unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script type="text/babel">
+
+    // Your  code will go here
+    function TaskManager(){
+        const [inputData, setInputData] = React.useState("");
+        const [data, setData] = React.useState([])
+
+        function getData(){
+            axios.get("http://localhost:5000/todos")
+            .then((res)=> setData(res.data))
+            .catch((err)=> console.log(err))
+
+        }
+        getData()
+
+        function handleAddTask(){
+            let task = {title:inputData, status:false}
+            console.log(task)
+
+            axios.post("http://localhost:5000/todos",task)
+            .then(()=>console.log("Task added"))
+            .catch(()=> console.log("failed to add..."))
+        }
+
+        function handleChange(){
+            console.log(el)
+            console.log({...el, status:true})
+            axios.patch(`http://localhost:5000/todos/${i}`,
+            {...el, status:true})
+            .then(()=>console.log("Task updated"))
+            .catch(()=> console.log("failed to update..."))
+
+
+        }
+
+
+        return(
+            <div>
+                <div>
+                    <input type="text" placeholder="Enter task"
+                    onChange={(e)=> setInputData(e.target.value)}
+                    value={inputData}/>
+
+                    <button onClick={handleAddTask} >ADD TASK</button>
+                </div>
+
+                <ul>
+                    {data.map((el,i)=>(
+                         <li key={i}>{el.title}
+                         <span onClick={()=> handleChange(el,i)}> Status:- {el.status ?"completed":"pending"}</span>{" "}
+                         </li>
+                    ))}
+                </ul>
+                
+            </div>
+        )
+
+    }
+    ReactDOM.createRoot(document.getElementById("root")).render(<TaskManager/>)
+  </script>
+</html>
